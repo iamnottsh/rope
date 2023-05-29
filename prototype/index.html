@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h1>同步滚动</h1>
+<div style="display: flex; height: 100px">
+    <div id="left" style="width: 50%; height: 100%; background-color: brown; overflow: auto">
+        <section>
+            <div>1</div>
+            <div>1</div>
+            <div>1</div>
+            <div>1</div>
+            <div>1</div>
+            <div>1</div>
+            <div>1</div>
+            <div>1</div>
+            <div>1</div>
+        </section>
+        <section>
+            <div>2</div>
+            <div>2</div>
+            <div>2</div>
+            <div>2</div>
+            <div>2</div>
+            <div>2</div>
+            <div>2</div>
+            <div>2</div>
+            <div>2</div>
+        </section>
+        <section>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+        </section>
+    </div>
+    <div id="right" style="width: 50%; height: 100%; background-color: beige; overflow: auto">
+        <section>
+            <div>1</div>
+            <div>1</div>
+            <div>1</div>
+            <div>1</div>
+        </section>
+        <section>
+            <div>2</div>
+            <div>2</div>
+            <div>2</div>
+        </section>
+        <section>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+            <div>3</div>
+        </section>
+    </div>
+</div>
+<script>
+
+    function getPos(current) {
+        const {children, scrollTop} = current, {length} = children
+        let index = -1, most = Infinity
+        for (let i = 0; i < length; i++) {
+            const element = children[i]
+            const {offsetTop, offsetHeight} = element
+            if (offsetTop - current.offsetTop + offsetHeight >= scrollTop && offsetTop < most) {
+                index = i
+                most = offsetTop
+            }
+        }
+        const element = children[index]
+        return element ?
+            {i: index, j: (scrollTop + current.offsetTop - element.offsetTop) / element.offsetHeight} :
+            {i: index, j: 1}
+    }
+
+    function setPos(current, pos) {
+        const {i, j} = pos
+        const element = current.children[i]
+        current.scrollTop = element ?
+            element.offsetTop - current.offsetTop + element.offsetHeight * j :
+            current.scrollHeight
+    }
+
+    function syncScroller(...nodes) {
+        const {length} = nodes
+        let sign = 0
+        for (const ele of nodes) ele.addEventListener('scroll', () => {
+            if (sign) --sign
+            else {
+                sign = length - 1
+                const pos = getPos(ele)
+                for (const node of nodes) if (node !== ele) setPos(node, pos)
+            }
+        })
+    }
+
+    const left = document.getElementById('left'), right = document.getElementById('right')
+    syncScroller(left, right)
+</script>
+</body>
+</html>
