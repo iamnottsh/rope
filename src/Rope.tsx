@@ -1,4 +1,4 @@
-import {Children, cloneElement, memo, ReactElement, useEffect, useRef} from "react";
+import {Children, cloneElement, ReactElement, useEffect, useRef} from "react";
 import {Box, BoxProps} from "@mui/material";
 
 function getPos(current: HTMLElement) {
